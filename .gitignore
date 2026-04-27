@@ -2,3 +2,4 @@
 
 /config/db.php
 /employee/uploads/*
+/attendance/uploads/attendance/*
