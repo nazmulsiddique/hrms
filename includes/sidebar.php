@@ -36,6 +36,21 @@
         </a>
     </div>
 
+    <!-- Leave Dropdown -->
+    <a data-bs-toggle="collapse" href="#leaveMenu" role="button">
+        <i class="fa fa-calendar"></i> Leave
+        <i class="fa fa-angle-down float-end"></i>
+    </a>
+
+    <div class="collapse ps-3" id="leaveMenu">
+        <a href="<?php echo BASE_URL; ?>leave/index.php">
+            <i class="fa fa-plus"></i> Apply Leave
+        </a>
+        <a href="<?php echo BASE_URL; ?>leave/leave.php">
+            <i class="fa fa-list"></i> Leave List
+        </a>
+    </div>
+
     <!-- Settings  Dropdown -->
     <a data-bs-toggle="collapse" href="#settingsMenu" role="button">
         <i class="fa fa-cog"></i> Settings

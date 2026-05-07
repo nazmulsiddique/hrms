@@ -4,6 +4,92 @@ date_default_timezone_set('Asia/Dhaka');
 require_once(__DIR__ . '/../config/config.php');
 require_once(BASE_PATH . '/config/db.php');
 require_once(BASE_PATH . '/includes/auth.php');
+
+$employee_role = $_SESSION['employee_role'] ?? '';
+$message = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $employee_role === 'admin') {
+
+    $attendance_id = intval($_POST['attendance_id']);
+
+    // HTML time input returns HH:MM only
+    $in_time_raw = $_POST['in_time'] ?? '';
+    $out_time_raw = $_POST['out_time'] ?? '';
+
+    // Fetch attendance date
+    $getDate = $conn->prepare("
+        SELECT attendance_date 
+        FROM attendance 
+        WHERE id=?
+    ");
+
+    $getDate->bind_param("i", $attendance_id);
+    $getDate->execute();
+    $dateResult = $getDate->get_result();
+    $dateRow = $dateResult->fetch_assoc();
+
+    if ($dateRow) {
+
+        $attendance_date = $dateRow['attendance_date'];
+
+        /*
+        ==========================================
+        FULL DATETIME FORMAT
+        ==========================================
+        */
+        $final_in_time = null;
+        $final_out_time = null;
+
+        if (!empty($in_time_raw)) {
+            $final_in_time = date(
+                'Y-m-d H:i:s',
+                strtotime($attendance_date . ' ' . $in_time_raw)
+            );
+        }
+
+        if (!empty($out_time_raw)) {
+            $final_out_time = date(
+                'Y-m-d H:i:s',
+                strtotime($attendance_date . ' ' . $out_time_raw)
+            );
+        }
+
+        /*
+        ==========================================
+        UPDATE QUERY
+        ==========================================
+        */
+        $stmt = $conn->prepare("
+            UPDATE attendance
+            SET 
+                in_time = ?,
+                out_time = ?
+            WHERE id = ?
+        ");
+
+        $stmt->bind_param(
+            "ssi",
+            $final_in_time,
+            $final_out_time,
+            $attendance_id
+        );
+
+        if ($stmt->execute()) {
+            $message = "
+                <div class='alert alert-success'>
+                    Attendance time updated successfully!
+                </div>
+            ";
+        } else {
+            $message = "
+                <div class='alert alert-danger'>
+                    Update failed: " . $stmt->error . "
+                </div>
+            ";
+        }
+    }
+}
+
 include(BASE_PATH . '/includes/header.php');
 
 /*
@@ -57,6 +143,8 @@ $result = $stmt->get_result();
 
         <div class="card-body">
 
+            <?php echo $message; ?>
+
             <!-- FILTER FORM -->
             <form method="GET" class="row g-3 mb-4">
 
@@ -106,16 +194,20 @@ $result = $stmt->get_result();
                         <tr>
                             <th>#</th>
                             <th>Employee ID</th>
+                            <th>IN Image</th>
+                            <th>OUT Image</th>
                             <th>Name</th>
                             <th>Role</th>
                             <th>Date</th>
                             <th>IN Time</th>
-                            <th>IN Location</th>
-                            <th>IN Image</th>
                             <th>OUT Time</th>
+                            <th>IN Location</th>
                             <th>OUT Location</th>
-                            <th>OUT Image</th>
                             <th>Status</th>
+
+                            <?php if ($employee_role === 'admin') { ?>
+                                <th>Admin Action</th>
+                            <?php } ?>
                         </tr>
                     </thead>
 
@@ -140,87 +232,133 @@ $result = $stmt->get_result();
                     ?>
 
                         <tr>
-                            <td><?php echo $sl++; ?></td>
 
-                            <td><?php echo htmlspecialchars($row['employee_id']); ?></td>
+                            <form method="POST">
 
-                            <td><?php echo htmlspecialchars($row['employee_name']); ?></td>
+                                <td><?php echo $sl++; ?></td>
 
-                            <td><?php echo htmlspecialchars($row['employee_role']); ?></td>
+                                <td><?php echo htmlspecialchars($row['employee_id']); ?></td>
 
-                            <td>
-                                <?php echo date('d-m-Y', strtotime($row['attendance_date'])); ?>
-                            </td>
-
-                            <td>
-                                <?php
-                                echo !empty($row['in_time'])
-                                    ? date('h:i:s A', strtotime($row['in_time']))
-                                    : '-';
-                                ?>
-                            </td>
-
-                            <td>
-                                <?php
-                                if (!empty($row['in_latitude'])) {
-                                    echo $row['in_latitude'] . "<br>" . $row['in_longitude'];
-                                } else {
-                                    echo '-';
-                                }
-                                ?>
-                            </td>
-
-                            <td>
-                                <?php if (!empty($row['in_image'])) { ?>
-                                    <a href="<?php echo $row['in_image']; ?>" target="_blank">
-                                        <img src="<?php echo $row['in_image']; ?>"
-                                             width="60"
-                                             height="60"
-                                             class="rounded border">
+                               <td>
+                                    <a href="<?php echo BASE_URL . 'attendance/' . (!empty($row['in_image']) ? $row['in_image'] : 'default-image.jpg'); ?>" target="_blank">
+                                        <img 
+                                            src="<?php echo BASE_URL . 'attendance/' . (!empty($row['in_image']) ? $row['in_image'] : 'default-image.jpg'); ?>" 
+                                            alt="Employee IN Image"
+                                            class="img-thumbnail"
+                                            style="width:50px;height:50px;object-fit:cover;"
+                                        >
                                     </a>
-                                <?php } else { echo '-'; } ?>
-                            </td>
+                                </td>
 
-                            <td>
-                                <?php
-                                echo !empty($row['out_time'])
-                                    ? date('h:i:s A', strtotime($row['out_time']))
-                                    : '-';
-                                ?>
-                            </td>
-
-                            <td>
-                                <?php
-                                if (!empty($row['out_latitude'])) {
-                                    echo $row['out_latitude'] . "<br>" . $row['out_longitude'];
-                                } else {
-                                    echo '-';
-                                }
-                                ?>
-                            </td>
-
-                            <td>
-                                <?php if (!empty($row['out_image'])) { ?>
-                                    <a href="<?php echo $row['out_image']; ?>" target="_blank">
-                                        <img src="<?php echo $row['out_image']; ?>"
-                                             width="60"
-                                             height="60"
-                                             class="rounded border">
+                                <td>
+                                    <a href="<?php echo BASE_URL . 'attendance/' . (!empty($row['out_image']) ? $row['out_image'] : 'default-image.jpg'); ?>" target="_blank">
+                                        <img 
+                                            src="<?php echo BASE_URL . 'attendance/' . (!empty($row['out_image']) ? $row['out_image'] : 'default-image.jpg'); ?>" 
+                                            alt="Employee OUT Image"
+                                            class="img-thumbnail"
+                                            style="width:50px;height:50px;object-fit:cover;"
+                                        >
                                     </a>
-                                <?php } else { echo '-'; } ?>
-                            </td>
+                                </td>
 
-                            <td>
-                                <?php
-                                if ($status == 'Completed') {
-                                    echo "<span class='badge bg-success'>$status</span>";
-                                } elseif ($status == 'IN Only') {
-                                    echo "<span class='badge bg-warning text-dark'>$status</span>";
-                                } else {
-                                    echo "<span class='badge bg-danger'>$status</span>";
-                                }
-                                ?>
-                            </td>
+                                <td><?php echo htmlspecialchars($row['employee_name']); ?></td>
+
+                                <td><?php echo htmlspecialchars($row['employee_role']); ?></td>
+
+                                <td>
+                                    <?php echo date('d-m-Y', strtotime($row['attendance_date'])); ?>
+                                </td>
+
+                                <!-- IN TIME -->
+                                <td>
+                                    <?php if ($employee_role === 'admin') { ?>
+                                        <input type="time"
+                                               name="in_time"
+                                               value="<?php echo !empty($row['in_time']) ? date('H:i:s', strtotime($row['in_time'])) : ''; ?>"
+                                               class="form-control">
+                                    <?php } else { ?>
+                                        <?php echo !empty($row['in_time']) ? date('h:i:s A', strtotime($row['in_time'])) : '-'; ?>
+                                    <?php } ?>
+                                </td>
+
+                                <!-- OUT TIME -->
+                                <td>
+                                    <?php if ($employee_role === 'admin') { ?>
+                                        <input type="time"
+                                               name="out_time"
+                                               value="<?php echo !empty($row['out_time']) ? date('H:i:s', strtotime($row['out_time'])) : ''; ?>"
+                                               class="form-control">
+                                    <?php } else { ?>
+                                        <?php echo !empty($row['out_time']) ? date('h:i:s A', strtotime($row['out_time'])) : '-'; ?>
+                                    <?php } ?>
+                                </td>
+
+                                <td>
+                                    <?php if (!empty($row['in_latitude']) && !empty($row['in_longitude'])) { ?>
+
+                                        <a 
+                                            href="https://www.google.com/maps?q=<?php echo $row['in_latitude']; ?>,<?php echo $row['in_longitude']; ?>" 
+                                            target="_blank"
+                                            class="text-decoration-none"
+                                        >
+                                            <?php echo $row['in_latitude']; ?>
+                                            <br>
+                                            <?php echo $row['in_longitude']; ?>
+                                        </a>
+
+                                    <?php } else { ?>
+
+                                        -
+
+                                    <?php } ?>
+                                </td>
+
+                                <td>
+                                    <?php if (!empty($row['out_latitude']) && !empty($row['out_longitude'])) { ?>
+
+                                        <a 
+                                            href="https://www.google.com/maps?q=<?php echo $row['out_latitude']; ?>,<?php echo $row['out_longitude']; ?>" 
+                                            target="_blank"
+                                            class="text-decoration-none"
+                                        >
+                                            <?php echo $row['out_latitude']; ?>
+                                            <br>
+                                            <?php echo $row['out_longitude']; ?>
+                                        </a>
+
+                                    <?php } else { ?>
+
+                                        -
+
+                                    <?php } ?>
+                                </td>
+
+                                <td>
+                                    <?php
+                                    if ($status == 'Completed') {
+                                        echo "<span class='badge bg-success'>$status</span>";
+                                    } elseif ($status == 'IN Only') {
+                                        echo "<span class='badge bg-warning text-dark'>$status</span>";
+                                    } else {
+                                        echo "<span class='badge bg-danger'>$status</span>";
+                                    }
+                                    ?>
+                                </td>
+
+                                <?php if ($employee_role === 'admin') { ?>
+                                    <td>
+                                        <input type="hidden"
+                                               name="attendance_id"
+                                               value="<?php echo $row['id']; ?>">
+
+                                        <button type="submit"
+                                                class="btn btn-primary btn-sm">
+                                            Update
+                                        </button>
+                                    </td>
+                                <?php } ?>
+
+                            </form>
 
                         </tr>
 
@@ -231,7 +369,7 @@ $result = $stmt->get_result();
                     ?>
 
                         <tr>
-                            <td colspan="12">
+                            <td colspan="11">
                                 No attendance records found.
                             </td>
                         </tr>
