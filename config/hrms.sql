@@ -26,7 +26,9 @@ CREATE TABLE `attendance` (
 
 INSERT INTO `attendance` (`id`, `employee_id`, `in_time`, `in_latitude`, `in_longitude`, `in_image`, `out_time`, `out_latitude`, `out_longitude`, `out_image`, `attendance_date`, `created_at`) VALUES
 (1,	'1234',	'2026-04-27 05:47:59',	'23.814236806646043',	'90.43811130424312',	'uploads/attendance/1234_in_1777261679.png',	'2026-04-27 05:48:58',	'23.814256103488017',	'90.43813136580826',	'uploads/attendance/1234_out_1777261738.png',	'2026-04-27',	'2026-04-27 03:47:59'),
-(2,	'12345',	'2026-04-27 09:58:39',	'23.814289712115574',	'90.4381501665669',	'uploads/attendance/12345_in_1777262319.png',	'2026-04-27 09:58:58',	'23.814289712115574',	'90.4381501665669',	'uploads/attendance/12345_out_1777262338.png',	'2026-04-27',	'2026-04-27 03:58:39');
+(2,	'12345',	'2026-04-27 09:58:39',	'23.814289712115574',	'90.4381501665669',	'uploads/attendance/12345_in_1777262319.png',	'2026-04-27 09:58:58',	'23.814289712115574',	'90.4381501665669',	'uploads/attendance/12345_out_1777262338.png',	'2026-04-27',	'2026-04-27 03:58:39'),
+(6,	'12345',	'2026-05-07 08:16:12',	'23.81411604074008',	'90.4378026845757',	'uploads/attendance/12345_in_1778148972.png',	'2026-05-07 18:02:15',	'23.81411604074008',	'90.4378026845757',	'uploads/attendance/12345_out_1778148975.png',	'2026-05-07',	'2026-05-07 10:16:12'),
+(7,	'1234',	'2026-05-07 16:25:42',	'23.81410261288805',	'90.43776047977423',	'uploads/attendance/1234_in_1778149542.png',	'2026-05-07 16:26:22',	'23.814106295958677',	'90.43781318140384',	'uploads/attendance/1234_out_1778149582.png',	'2026-05-07',	'2026-05-07 10:25:42');
 
 DROP TABLE IF EXISTS `departments`;
 CREATE TABLE `departments` (
@@ -101,9 +103,30 @@ INSERT INTO `employees` (`id`, `employee_id`, `employee_name`, `employee_father_
 (3,	'EMP8467',	'Sourov Siddique',	'Sohidul Islam',	'Mrs Sultana',	'sourov@gmail.com',	'01929202922999',	'0192828229',	'02383838388888888',	1,	1,	1,	'2026-04-15',	'2023-01-26',	5434.00,	'Kuripara, Ghatail, Tangail',	'BSC in CSE',	'0',	'02832830',	'EMP_1777178419.jpeg',	NULL,	'',	'active',	'2026-04-26 04:40:19',	'2026-04-26 04:40:43'),
 (4,	'EMP9425',	'Rohim Mia',	'dfasdf ',	'afa sdfadf',	'nazmulit92@gmail.com',	'01686690765',	'01729890659',	'02383838388888888',	1,	1,	1,	'2026-04-07',	'2025-12-03',	432423.00,	'Kuripara, Ghatail, Tangail',	'BSC in CSE',	'nalfas',	'02832830',	'EMP_1777178749.png',	NULL,	'',	'active',	'2026-04-26 04:45:49',	'2026-04-26 04:57:14'),
 (5,	'EMP9716',	'dfasdfasd ',	'afdsfafd',	'af asdfsadf',	'nazmulit92@gmail.com',	'afasdf',	'adsfasdf',	'0',	1,	1,	1,	'2026-04-02',	'2025-12-19',	2432.00,	'Kuripara, Ghatail, Tangail',	'dasfsdf',	'sdfasdf',	'adfadsfads',	'EMP_1777179686.jpg',	NULL,	'',	'active',	'2026-04-26 05:01:26',	'2026-04-26 05:01:26'),
-(6,	'EMP8479',	'Sakibul',	'Sohidul Islam',	'Mrs Sultana',	'nazmulit92@gmail.com',	'01686690765',	'01729890659',	'2383838388888888',	2,	2,	1,	'2026-04-09',	'2026-04-01',	434234.00,	'Kuripara, Ghatail, Tangail',	'BSC in CSE',	'Nazmul',	'02832830',	'EMP_1777179748.jpg',	NULL,	'',	'active',	'2026-04-26 05:02:28',	'2026-04-26 05:02:49'),
+(6,	'123',	'Sakibul',	'Sohidul Islam',	'Mrs Sultana',	'nazmulit92@gmail.com',	'01686690765',	'01729890659',	'2383838388888888',	2,	2,	1,	'2026-04-09',	'2026-04-01',	434234.00,	'Kuripara, Ghatail, Tangail',	'BSC in CSE',	'Nazmul',	'02832830',	'EMP_1777179748.jpg',	'$2y$10$7qdqgZuaHKDrAROZHV8f9eydlQ0J.tOiIkWJtMlrqY0V9vu5nxTRi',	'employee',	'active',	'2026-04-26 05:02:28',	'2026-05-12 05:25:16'),
 (7,	'12345',	'fadfasd',	'fadsfasdf',	' asdfadsf',	'nazmulit92@gmail.com',	'01686690765',	'42342342',	'2383838388888888',	2,	2,	1,	'2026-04-01',	'2026-04-02',	42342.00,	'Kuripara, Ghatail, Tangail',	'BSC in CSE',	'dfasdfasd ',	'4324234',	'EMP_1777184434.png',	'$2y$10$9jK9JeAWZZEuYidp.gUc6e.93bPathH7cGbmdgUcDNUMNVB4eH5Be',	'admin',	'active',	'2026-04-26 06:20:34',	'2026-04-27 03:55:05'),
 (8,	'1234',	'AAAAAAAA',	' adsfadsf ',	'asdfasdfasd',	'nazmulit92@gmail.com',	'01686690765',	'09292282828',	'2383838388888888',	1,	2,	1,	'2026-04-15',	'2025-09-03',	43343.00,	'Kuripara, Ghatail, Tangail',	'BSC in CSE',	'dfadsfadsdfasdf',	'dasfasdfsf',	'EMP_1777191818.png',	'$2y$10$DYgM7ndqpSaA6t18f6l4FOGuzsQPgjMXul9mzhpHeCkBc2eSPmQIq',	'employee',	'active',	'2026-04-26 08:23:38',	'2026-04-27 03:27:09');
+
+DROP TABLE IF EXISTS `leave_balance`;
+CREATE TABLE `leave_balance` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `employee_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `year` year DEFAULT NULL,
+  `cl_balance` int DEFAULT '0',
+  `ml_balance` int DEFAULT '0',
+  `bl_balance` int DEFAULT '0',
+  `with_pay_balance` int DEFAULT '0',
+  `without_pay_balance` int DEFAULT '0',
+  `others_balance` int DEFAULT '0',
+  `status` enum('active','inactive') COLLATE utf8mb4_general_ci DEFAULT 'active',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `leave_balance` (`id`, `employee_id`, `year`, `cl_balance`, `ml_balance`, `bl_balance`, `with_pay_balance`, `without_pay_balance`, `others_balance`, `status`, `created_at`, `updated_at`) VALUES
+(1,	'1234',	'2026',	10,	14,	1,	0,	0,	2,	'active',	'2026-05-07 11:54:27',	'2026-05-07 11:54:45'),
+(2,	'123',	'2026',	7,	11,	2,	0,	20,	0,	'active',	'2026-05-12 05:25:46',	NULL);
 
 DROP TABLE IF EXISTS `leaves`;
 CREATE TABLE `leaves` (
@@ -121,6 +144,9 @@ CREATE TABLE `leaves` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+INSERT INTO `leaves` (`id`, `employee_id`, `leave_type`, `start_date`, `end_date`, `total_days`, `address_during_leave`, `reason`, `leave_status`, `created_at`, `updated_at`) VALUES
+(1,	'1234',	'CL',	'2026-05-06',	'2026-05-07',	2,	'                    Home                               ',	'                    Personal                                                    ',	'approved',	'2026-05-07 11:39:49',	'2026-05-12 05:07:41'),
+(2,	'1234',	'BL',	'2026-05-12',	'2026-05-12',	1,	'',	'',	'pending',	'2026-05-12 05:06:57',	'2026-05-12 05:07:30');
 
 DROP TABLE IF EXISTS `shifts`;
 CREATE TABLE `shifts` (
@@ -139,4 +165,4 @@ CREATE TABLE `shifts` (
 INSERT INTO `shifts` (`id`, `shift_name`, `start_time`, `end_time`, `late_after`, `early_leave_before`, `status`, `created_at`, `updated_at`) VALUES
 (1,	'General',	'09:00:00',	'18:00:00',	'09:10:00',	'18:00:00',	'active',	'2026-04-26 04:07:06',	'2026-04-26 04:07:29');
 
--- 2026-05-07 09:58:22 UTC
+-- 2026-05-12 06:16:24 UTC
