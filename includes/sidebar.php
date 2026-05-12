@@ -66,6 +66,9 @@
         <a href="<?php echo BASE_URL; ?>settings/shift.php">
             <i class="fa fa-clock"></i> Shifts
         </a>
+        <a href="<?php echo BASE_URL; ?>settings/leave-assign.php">
+            <i class="fa fa-calendar"></i> Leave Assaign
+        </a>
     </div>
 
        <!-- ACCOUNT   Dropdown -->

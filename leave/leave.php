@@ -69,9 +69,220 @@ if ($role == 'admin') {
 
 $stmt->execute();
 $result = $stmt->get_result();
+
+
+// Leave balance query for report
+$current_year = date('Y');
+
+/*
+==================================================
+GET EMPLOYEE LEAVE BALANCE
+==================================================
+*/
+if ($role == 'admin') {
+
+    $balance_sql = "
+        SELECT 
+            b.*,
+            e.employee_name
+        FROM leave_balance b
+        LEFT JOIN employees e
+            ON b.employee_id = e.employee_id
+        WHERE b.year = ?
+        ORDER BY e.employee_name ASC
+    ";
+
+    $balance_stmt = $conn->prepare($balance_sql);
+    $balance_stmt->bind_param("i", $current_year);
+
+} else {
+
+    $balance_sql = "
+        SELECT 
+            b.*,
+            e.employee_name
+        FROM leave_balance b
+        LEFT JOIN employees e
+            ON b.employee_id = e.employee_id
+        WHERE b.employee_id = ?
+          AND b.year = ?
+        ORDER BY e.employee_name ASC
+    ";
+
+    $balance_stmt = $conn->prepare($balance_sql);
+    $balance_stmt->bind_param("si", $employee_id, $current_year);
+}
+
+$balance_stmt->execute();
+$balance_result = $balance_stmt->get_result();
+
+/*
+==================================================
+FUNCTION: GET APPROVED LEAVE DAYS
+==================================================
+*/
+function getApprovedLeaveDays($conn, $employee_id, $leave_type, $year) {
+    $stmt = $conn->prepare("
+        SELECT COALESCE(SUM(total_days), 0) AS used_days
+        FROM leaves
+        WHERE employee_id = ?
+          AND leave_type = ?
+          AND leave_status = 'approved'
+          AND YEAR(start_date) = ?
+    ");
+
+    $stmt->bind_param("ssi", $employee_id, $leave_type, $year);
+    $stmt->execute();
+
+    $row = $stmt->get_result()->fetch_assoc();
+
+    return (int)$row['used_days'];
+}
 ?>
 
 <div class="container mt-4 mb-5">
+
+<!-- LEAVE BALANCE CARD -->
+<div class="card shadow my-4">
+
+    <div class="card-header bg-success text-white">
+        <h4 class="mb-0">
+            Leave Balance Report (<?php echo $current_year; ?>)
+        </h4>
+    </div>
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-striped text-center align-middle">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>Employee ID</th>
+                        <th>Employee Name</th>
+                        <th>Year</th>
+
+                        <th>CL<br><small>Assigned / Used / Remaining</small></th>
+                        <th>ML<br><small>Assigned / Used / Remaining</small></th>
+                        <th>BL<br><small>Assigned / Used / Remaining</small></th>
+                        <th>With Pay<br><small>Assigned / Used / Remaining</small></th>
+                        <th>Without Pay<br><small>Assigned / Used / Remaining</small></th>
+                        <th>Others<br><small>Assigned / Used / Remaining</small></th>
+
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                <?php if ($balance_result->num_rows > 0) { ?>
+
+                    <?php while ($bal = $balance_result->fetch_assoc()) { ?>
+
+                        <?php
+                        $year = (int)$bal['year'];
+                        $emp_id = $bal['employee_id'];
+
+                        // Approved leave used
+                        $cl_used   = getApprovedLeaveDays($conn, $emp_id, 'CL', $year);
+                        $ml_used   = getApprovedLeaveDays($conn, $emp_id, 'ML', $year);
+                        $bl_used   = getApprovedLeaveDays($conn, $emp_id, 'BL', $year);
+                        $wpl_used  = getApprovedLeaveDays($conn, $emp_id, 'WITH PAY LEAVE', $year);
+                        $wopl_used = getApprovedLeaveDays($conn, $emp_id, 'WITHOUT PAY LEAVE', $year);
+                        $oth_used  = getApprovedLeaveDays($conn, $emp_id, 'OTHERS', $year);
+
+                        // Remaining balance
+                        $cl_rem   = $bal['cl_balance'] - $cl_used;
+                        $ml_rem   = $bal['ml_balance'] - $ml_used;
+                        $bl_rem   = $bal['bl_balance'] - $bl_used;
+                        $wpl_rem  = $bal['with_pay_balance'] - $wpl_used;
+                        $wopl_rem = $bal['without_pay_balance'] - $wopl_used;
+                        $oth_rem  = $bal['others_balance'] - $oth_used;
+                        ?>
+
+                        <tr>
+
+                            <td><?php echo htmlspecialchars($emp_id); ?></td>
+
+                            <td><?php echo htmlspecialchars($bal['employee_name']); ?></td>
+
+                            <td><?php echo $year; ?></td>
+
+                            <td>
+                                <?php echo $bal['cl_balance']; ?>
+                                / <?php echo $cl_used; ?>
+                                / <strong><?php echo $cl_rem; ?></strong>
+                            </td>
+
+                            <td>
+                                <?php echo $bal['ml_balance']; ?>
+                                / <?php echo $ml_used; ?>
+                                / <strong><?php echo $ml_rem; ?></strong>
+                            </td>
+
+                            <td>
+                                <?php echo $bal['bl_balance']; ?>
+                                / <?php echo $bl_used; ?>
+                                / <strong><?php echo $bl_rem; ?></strong>
+                            </td>
+
+                            <td>
+                                <?php echo $bal['with_pay_balance']; ?>
+                                / <?php echo $wpl_used; ?>
+                                / <strong><?php echo $wpl_rem; ?></strong>
+                            </td>
+
+                            <td>
+                                <?php echo $bal['without_pay_balance']; ?>
+                                / <?php echo $wopl_used; ?>
+                                / <strong><?php echo $wopl_rem; ?></strong>
+                            </td>
+
+                            <td>
+                                <?php echo $bal['others_balance']; ?>
+                                / <?php echo $oth_used; ?>
+                                / <strong><?php echo $oth_rem; ?></strong>
+                            </td>
+
+                            <td>
+                                <?php if ($bal['status'] == 'active') { ?>
+                                    <span class="badge bg-success">Active</span>
+                                <?php } else { ?>
+                                    <span class="badge bg-danger">Inactive</span>
+                                <?php } ?>
+                            </td>
+
+                        </tr>
+
+                    <?php } ?>
+
+                <?php } else { ?>
+
+                    <tr>
+                        <td colspan="10">
+                            No leave balance found for <?php echo $current_year; ?>.
+                        </td>
+                    </tr>
+
+                <?php } ?>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="mt-3">
+            <small class="text-muted">
+                Format: <strong>Assigned / Approved Used / Remaining</strong>
+            </small>
+        </div>
+
+    </div>
+
+</div>
+
 
     <div class="card shadow">
 
