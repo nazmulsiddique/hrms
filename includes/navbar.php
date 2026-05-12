@@ -7,11 +7,9 @@ $user_name = $_SESSION['employee_name'] ?? 'Guest';
 $user_id = $_SESSION['employee_id'] ?? 'User';
 ?>
 
-<nav class="navbar navbar-light bg-light shadow-sm" style="margin-left:250px;">
+<nav class="navbar navbar-light bg-light shadow-sm">
     <div class="container-fluid">
-
-        <span class="navbar-brand">Dashboard</span>
-
+        <span class="navbar-brand ps-5 ps-md-0">Dashboard</span>
         <div class="d-flex align-items-center gap-2">
             <i class="fa fa-user"></i>
             <span>

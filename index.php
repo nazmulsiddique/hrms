@@ -173,7 +173,7 @@
         $total_emp = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM employees"));
         ?>
     <!-- Card 1 -->
-    <div class="col-md-4">
+    <div class="col-md-4 mb-2">
         <div class="card shadow border-0">
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
@@ -185,7 +185,7 @@
         </div>
     </div>
     <!-- Card 2 -->
-    <div class="col-md-4">
+    <div class="col-md-4 mb-2">
         <div class="card shadow border-0">
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
@@ -215,7 +215,7 @@
         </div>
     </div>
     <!-- Card 3 -->
-    <div class="col-md-4">
+    <div class="col-md-4 mb-2">
         <div class="card shadow border-0">
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>

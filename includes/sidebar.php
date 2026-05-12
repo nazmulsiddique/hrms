@@ -77,12 +77,12 @@
         <i class="fa fa-angle-down float-end"></i>
     </a>
     <div class="collapse ps-3" id="accountMenu">
-        <a href="<?php echo BASE_URL; ?>profile.php">
+        <!-- <a href="<?php //echo BASE_URL; ?>profile.php">
             <i class="fa fa-user"></i> My Profile
         </a>
-        <a href="<?php echo BASE_URL; ?>change-password.php">
+        <a href="<?php //echo BASE_URL; ?>change-password.php">
             <i class="fa fa-key"></i> Change Password
-        </a>
+        </a> -->
         <a href="<?php echo BASE_URL; ?>logout.php"
        onclick="return confirm('Are you sure you want to logout?')"
        class="text-danger">
